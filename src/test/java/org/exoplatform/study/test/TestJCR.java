@@ -4,11 +4,17 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import junit.framework.TestCase;
+
+import org.chromattic.api.Chromattic;
+import org.chromattic.api.ChromatticSession;
+import org.exoplatform.commons.chromattic.ChromatticManager;
 import org.exoplatform.container.StandaloneContainer;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import org.exoplatform.study.sampleJCR.Member;
+import org.exoplatform.study.sampleJCR.Team;
 
 public class TestJCR extends TestCase {
    
@@ -78,5 +84,30 @@ public void testAddTeamMember() throws RepositoryException{
       session.save();
       System.out.println("=============="+team.getName()+"/"+binh.getPath()+"/"+binh.getProperty("lab:age").getLong());
       assertNotNull(team);
+      session.logout();
       }
+
+/**
+ * Test add new team and new member using Chromattic
+ * @throws RepositoryException
+ */
+public void testAddTeamMemberChromattic() throws RepositoryException{  
+	assertNotNull(1);	
+	ChromatticManager chromatticManager = (ChromatticManager)container.getComponentInstanceOfType(ChromatticManager.class);
+	Chromattic chromattic = chromatticManager.getLifeCycle("binhdv").getChromattic();
+	assertNotNull(chromatticManager);
+	ChromatticSession chrome = chromattic.openSession();
+	Team exo = chrome.findByPath(Team.class, "Exo");
+	if (exo == null){
+		exo=chrome.create(Team.class, "Exo");
+		chrome.save();
+	}
+	assertNotNull(exo);
+	Member m = exo.createMember();
+	m.setMemberName("binh");
+	m.setMemberAge(29);
+	assertEquals(m.getName(), "binh");
+	chrome.save();
+	chrome.close();
+}
 }

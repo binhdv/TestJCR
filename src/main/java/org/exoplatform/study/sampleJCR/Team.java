@@ -1,6 +1,8 @@
 package org.exoplatform.study.sampleJCR;
 
 import java.util.Map;
+
+import org.chromattic.api.annotations.Create;
 import org.chromattic.api.annotations.OneToMany;
 import org.chromattic.api.annotations.PrimaryType;
 import org.chromattic.api.annotations.Property;
@@ -24,4 +26,6 @@ public abstract class Team {
 	public void addBook(Member m) {
 		getMembers().put(m.getName(), m);
 	}
+	@Create
+	public abstract Member createMember();
 }
